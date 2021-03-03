@@ -1,67 +1,25 @@
-/* (La lección tendrá: título, descripción
-    y estado) */
-
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-require('mongoose-currency').loadType(mongoose);
-const Currency = mongoose.Types.Currency;
-
-var commentSchema = new Schema({
-    rating:  {
-        type: Number,
-        min: 1,
-        max: 5,
-        required: true
-    },
-    comment:  {
-        type: String,
-        required: true
-    },
-    author: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class lesson extends Model {
+    /**
+     * Helper method for defining associations.
+     * This method is not a part of Sequelize lifecycle.
+     * The `models/index` file will call this method automatically.
+     */
+    static associate(models) {
+      // define association here
     }
-}, {
-    timestamps: true
-});
-
-const dishSchema = new Schema({
-    name: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    description: {
-        type: String,
-        required: true
-    },
-    image: {
-        type: String,
-        required: true
-    },
-    category: {
-        type: String,
-        required: true
-    },
-    label: {
-        type: String,
-        default: ''
-    },
-    price: {
-        type: Currency,
-        required: true,
-        min: 0
-    },
-    featured: {
-        type: Boolean,
-        default:false      
-    },
-    comments:[commentSchema],
-    
-}, {
-    timestamps: true
-});
-
-var Dishes = mongoose.model('Dish', dishSchema);
-
-module.exports = Dishes;
+  };
+  lesson.init({
+    title: DataTypes.STRING,
+    description: DataTypes.STRING,
+    state: DataTypes.BOOLEAN
+  }, {
+    sequelize,
+    modelName: 'lesson',
+  });
+  return lesson;
+};
