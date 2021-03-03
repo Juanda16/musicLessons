@@ -9,7 +9,7 @@ const Sequelize = require( 'sequelize' )
 userRouter.use(bodyParser.json());
 const db = require("../models/index");
 const User = db['user'];
-
+const config = require("../config/jwtconfig");
 
 //const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
@@ -38,31 +38,15 @@ var bcrypt = require("bcryptjs");
 
 
  userRouter.route('/signup')
-.post((req, res, next) => {
+.post(authenticate.checkDuplicateUsernameOrEmail, (req, res, next) => {
   User.create({
     username: req.body.username,
     email: req.body.email,
     password: bcrypt.hashSync(req.body.password, 8)
   })
     .then(user => {
-      if (req.body.roles) {
-        Role.findAll({
-          where: {
-            name: {
-              [Op.or]: req.body.roles
-            }
-          }
-        }).then(roles => {
-          user.setRoles(roles).then(() => {
-            res.send({ message: "User was registered successfully!" });
-          });
-        });
-      } else {
-        // user role = 1
-        user.setRoles([1]).then(() => {
-          res.send({ message: "User was registered successfully!" });
-        });
-      }
+      res.send({ message: "User was registered successfully!" });
+      
     })
     .catch(err => {
       res.status(500).send({ message: err.message });
@@ -76,7 +60,7 @@ userRouter.route('/login')
 
   User.findOne({
     where: {
-      username: req.body.username
+      email: req.body.email,
     }
   })
     .then(user => {
@@ -96,7 +80,7 @@ userRouter.route('/login')
         });
       }
 
-      var token = jwt.sign({ id: user.id }, config.secret, {
+      var token = jwt.sign({ id: user.id }, config.secretKey, {
         expiresIn: 86400 // 24 hours
       });
 
