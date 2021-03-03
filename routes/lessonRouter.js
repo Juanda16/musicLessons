@@ -20,10 +20,11 @@ lessonRouter.route('/')
   next();
 })
 
-.get((req, res, next)=>{
+.get(authenticate.verifyToken,(req, res, next)=>{
     Lesson.findAll()
     .then( lessonResponse => {
-      res.status( 200 ).json( lessonResponse )
+        res.setHeader('Content-Type', 'application/json');
+        res.status( 200 ).json( lessonResponse )
     })
     .catch( error => {
       res.status( 400 ).send( error )
@@ -40,5 +41,23 @@ lessonRouter.route('/')
         res.status( 400 ).send( error )
       })
   } );
+
+lessonRouter.route('/:lessonId')
+.all((req,res,next) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    next();
+  })
+
+.get(authenticate.verifyToken,(req, res, next)=>{
+      Lesson.findOne({"_id":req.params.dishId})
+      .then( lessonResponse => {
+          res.setHeader('Content-Type', 'application/json');
+          res.status( 200 ).json( lessonResponse )
+      })
+      .catch( error => {
+        res.status( 400 ).send( error )
+      })
+  })
 
 module.exports = lessonRouter;

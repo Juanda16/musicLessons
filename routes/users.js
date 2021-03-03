@@ -33,11 +33,7 @@ var bcrypt = require("bcryptjs");
     })
 } );
    
-  
-
-
-
- userRouter.route('/signup')
+userRouter.route('/signup')
 .post(authenticate.checkDuplicateUsernameOrEmail, (req, res, next) => {
   User.create({
     username: req.body.username,
@@ -112,15 +108,7 @@ userRouter.route('/login')
 
 module.exports = userRouter;
 /*
-userRouter.route('/facebook/token')
-.get(passport.authenticate('facebook-token'), (req, res) => {
-  if (req.user) {
-    var token = authenticate.getToken({_id: req.user._id});
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/json');
-    res.json({success: true, token: token, status: 'You are successfully logged in!'});
-  }
-});
+
 
 userRouter.route('/logout')
 .get((req, res, next) => {
