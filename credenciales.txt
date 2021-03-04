@@ -1,0 +1,26 @@
+Credenciales de muestra y Json para pruebas
+
+
+{
+    "email": "test1@test.com",
+    "password": "admin"
+}
+
+{
+    "username": "admin2",
+    "email": "test2@test.com",
+    "password": "admin"
+}
+
+{
+        "title": "Lesson2",
+        "description":" descripcion",
+        "state": "1"
+}
+
+
+{
+    
+    "note": "una nota de prueba"
+    
+}
