@@ -37,6 +37,7 @@ db.sequelize = sequelize;
 
 db.user = require("./user.js")(sequelize, Sequelize);
 db.lesson = require("./lesson.js")(sequelize, Sequelize);
+db.notes = require("./note.js")(sequelize, Sequelize);
 
 db.lesson.belongsToMany(db.user, {
   through: "user_lesson",
@@ -47,6 +48,19 @@ db.user.belongsToMany(db.lesson, {
   through: "user_lesson",
   as: "lessons",
   foreignKey: "user_id",
+});
+
+
+db.lesson.hasMany(db.notes, { as: "notes" });
+db.notes.belongsTo(db.lesson, {
+  foreignKey: "lesson_id",
+  as: "lesson",
+});
+
+db.user.hasMany(db.notes, { as: "notes" });
+db.notes.belongsTo(db.user, {
+  foreignKey: "user_id",
+  as: "user",
 });
 
 module.exports = db;

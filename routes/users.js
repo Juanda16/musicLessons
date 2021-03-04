@@ -11,21 +11,24 @@ userRouter.use(bodyParser.json());
 const db = require("../models/index");
 const User = db['user'];
 const Lesson = db['lesson'];
+const Note = db['note'];
 const config = require("../config/jwtconfig");
 
 //const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 const lesson = require('../models/lesson');
+const note = require('../models/note');
 
-/* GET users listing. */
+
 userRouter.route('/')
   .all((req, res, next) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
     next();
   })
-  .get((req, res, next) => {
+  // In case we have to list the all users
+  .get((req, res, next) => { /* GET users listing. */
     User.findAll()
       .then(userResponse => {
         res.setHeader('Content-Type', 'application/json');
@@ -42,8 +45,9 @@ userRouter.route('/:userId')
     res.setHeader('Content-Type', 'text/plain');
     next();
   })
+  //to get a specific user with their lessons
   .get((req, res, next) => {
-    User.findAll({ "_id": req.params.UserId }, {
+    User.findOne({ "_id": req.params.UserId }, {
       include: [
         {
           model: Lesson,
@@ -52,9 +56,7 @@ userRouter.route('/:userId')
           through: {
             attributes: [],
           },
-          // through: {
-          //   attributes: ["lessons_id", "user_id"],
-          // },
+
         },
       ],
     })
@@ -67,7 +69,7 @@ userRouter.route('/:userId')
       })
   });
 
-
+// to create a new User
 userRouter.route('/signup')
   .post(authenticate.checkDuplicateUsernameOrEmail, (req, res, next) => {
     User.create({
@@ -83,7 +85,6 @@ userRouter.route('/signup')
         res.status(500).send({ message: err.message });
       });
   });
-
 
 
 userRouter.route('/login')
@@ -141,55 +142,35 @@ userRouter.route('/login')
       })
   });
 
-userRouter.route('/:lessonId')
-  .all((req, res, next) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    next();
-  })
 
+
+  userRouter.route('/:lessonId')
   .post(authenticate2.verifyToken, (req, res, next) => {
-    
     Lesson.findByPk(req.params.lessonId)
       .then((lesson) => {
-        console.log("esta es la lección" + req.params.lessonId + lesson)
         if (!lesson) {
+          res.status(404).send("lesson not found!");
           console.log("lesson not found!");
-          //return null;
         } else {
           //console.log(lesson)
-          User.findByPk(req.UserId)
+          User.findByPk(req.userId)
             .then((user) => {
-
               lesson.addUser(user);
+              res.setHeader('Content-Type', 'application/json');
+              res.status(200).json(lesson)
+            }).catch(error => {
+              res.status(400).send(error)
             })
-
         }
-        res.setHeader('Content-Type', 'application/json');
-        res.status(200).json(lesson)
+       
       })
       .catch(error => {
         res.status(400).send(error)
       })
   });
 
+  
 
 module.exports = userRouter;
-/*
-
-
-userRouter.route('/logout')
-.get((req, res, next) => {
-  if (req.session) {
-    req.session.destroy();
-    res.clearCookie('session-id');
-    res.redirect('/');
-  }
-  else {
-    var err = new Error('You are not logged in!');
-    err.status = 403;
-    next(err);
-  }
-});  */
 
 
