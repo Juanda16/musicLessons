@@ -22,10 +22,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // MySql
-/* db.sequelize.sync({force: true}).then(() => {
+ db.sequelize.sync({force: true}).then(() => {
     console.log('Drop and Resync Db');
     
-  }); */
+  }); 
 
 db.sequelize.sync();
 /* const connection = mysql.createConnection({

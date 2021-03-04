@@ -9,11 +9,13 @@ const Sequelize = require( 'sequelize' )
 userRouter.use(bodyParser.json());
 const db = require("../models/index");
 const User = db['user'];
+const Lesson = db['lesson'];
 const config = require("../config/jwtconfig");
 
 //const Op = db.Sequelize.Op;
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const lesson = require('../models/lesson');
 
 /* GET users listing. */
  userRouter.route('/')
@@ -32,7 +34,62 @@ var bcrypt = require("bcryptjs");
       res.status( 400 ).send( error )
     })
 } );
+
+userRouter.route('/:userId')
+.all((req,res,next) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  next();
+})
+.get((req, res, next)=>{
+  User.findAll({ "_id": req.params.UserId }, {
+    include: [
+      {
+        model: Lesson,
+        as: "lessons",
+        attributes: ["id", "title","state"],
+        through: {
+          attributes: [],
+        },
+        // through: {
+        //   attributes: ["lessons_id", "user_id"],
+        // },
+      },
+    ],
+  })
+    .then( userResponse => {
+      res.setHeader('Content-Type', 'application/json');
+      res.status( 200 ).json( userResponse )
+    })
+    .catch( error => {
+      res.status( 400 ).send( error )
+    })
+} );
    
+userRouter.route('/:lessonId')
+.all((req,res,next) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/plain');
+  next();
+})
+/* .post((req, res, next)=>{
+  Lesson.findOne({ "_id": req.params.lessonId })
+    .then((lesson) => {
+      if (!lesson) {
+        console.log("lesson not found!");
+        //return null;
+      }
+      })     
+  
+    .then( userResponse => {
+      res.setHeader('Content-Type', 'application/json');
+      res.status( 200 ).json( userResponse )
+    })
+    .catch( error => {
+      res.status( 400 ).send( error )
+    })
+} ); */
+
 userRouter.route('/signup')
 .post(authenticate.checkDuplicateUsernameOrEmail, (req, res, next) => {
   User.create({

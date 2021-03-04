@@ -32,7 +32,22 @@ Object.keys(db).forEach(modelName => {
   }
 });
 
+db.sequelize = Sequelize;
 db.sequelize = sequelize;
+
+db.user = require("./user.js")(sequelize, Sequelize);
+db.lesson = require("./lesson.js")(sequelize, Sequelize);
+
+db.lesson.belongsToMany(db.user, {
+  through: "user_lesson",
+  as: "users",
+  foreignKey: "lesson_id",
+});
+db.user.belongsToMany(db.lesson, {
+  through: "user_lesson",
+  as: "lessons",
+  foreignKey: "user_id",
+});
 
 module.exports = db;
 
