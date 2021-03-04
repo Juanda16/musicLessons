@@ -1,0 +1,32 @@
+EndPoints
+
+
+users/
+  get : list of all users
+  post: To create a new user
+
+users/:userId
+  get : to get a specific user with their lessons
+
+users/signup
+  post: to create a new User
+
+user/login
+  post: to authenticate and get the token 
+
+lessons/
+  get : list of all lessons
+  post: To create a new lesson 
+
+lessons/:lessonId
+  get:  list a specific lesson
+  post: Add lesson to a specific user
+  put: To update the lesson state
+
+notes/:lessonId
+  get: get the all notes of a specific user and specific lesson
+  post:add a note to specific user and specific lesson
+  delete: delete a specific note
+
+
+  

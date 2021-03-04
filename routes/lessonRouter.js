@@ -1,6 +1,5 @@
 var express = require('express');
 const bodyParser = require('body-parser');
-var passport = require('passport');
 const lessonRouter = express.Router();
 var authenticate = require('../authenticate/authenticate');
 const Sequelize = require('sequelize')
@@ -20,7 +19,7 @@ lessonRouter.route('/')
     })
 
     /* GET lessons listing. */
-    .get((req, res, next) => {
+    .get(authenticate.verifyToken,(req, res, next) => {
         Lesson.findAll({
             include: [
                 {
@@ -44,7 +43,7 @@ lessonRouter.route('/')
     })
 
     // To create a new lesson
-    .post((req, res, next) => {
+    .post(authenticate.verifyToken,(req, res, next) => {
         Lesson.create(req.body)
             .then(lessonResponse => {
                 res.setHeader('Content-Type', 'application/json');
@@ -83,5 +82,42 @@ lessonRouter.route('/:lessonId')
                 res.status(400).send(error)
             })
     })
+    //to update a lesson state
+    .put(authenticate.verifyToken, (req, res, next) => {
+        Lesson.findOne({ "_id": req.params.lessonId })
+            .then(lessonResponse => {
+                lessonResponse.state=req.body.state;
+                lessonResponse.save();
+                res.setHeader('Content-Type', 'application/json');
+                res.status(200).json(lessonResponse)
+            })
+            .catch(error => {
+                res.status(400).send(error)
+            })
+    })
+    // add lesson to a specific user
+    .post(authenticate.verifyToken, (req, res, next) => {
+        Lesson.findByPk(req.params.lessonId)
+          .then((lesson) => {
+            if (!lesson) {
+              res.status(404).send("lesson not found!");
+              console.log("lesson not found!");
+            } else {
+              //console.log(lesson)
+              User.findByPk(req.userId)
+                .then((user) => {
+                  lesson.addUser(user);
+                  res.setHeader('Content-Type', 'application/json');
+                  res.status(200).json(lesson)
+                }).catch(error => {
+                  res.status(400).send(error)
+                })
+            }
+           
+          })
+          .catch(error => {
+            res.status(400).send(error)
+          })
+      });
 
 module.exports = lessonRouter;

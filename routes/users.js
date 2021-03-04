@@ -28,7 +28,7 @@ userRouter.route('/')
     next();
   })
   // In case we have to list the all users
-  .get((req, res, next) => { /* GET users listing. */
+  .get(authenticate2.verifyToken,(req, res, next) => { /* GET users listing. */
     User.findAll()
       .then(userResponse => {
         res.setHeader('Content-Type', 'application/json');
@@ -46,7 +46,7 @@ userRouter.route('/:userId')
     next();
   })
   //to get a specific user with their lessons
-  .get((req, res, next) => {
+  .get(authenticate2.verifyToken,(req, res, next) => {
     User.findOne({ "_id": req.params.UserId }, {
       include: [
         {
@@ -143,33 +143,7 @@ userRouter.route('/login')
   });
 
 
-
-  userRouter.route('/:lessonId')
-  .post(authenticate2.verifyToken, (req, res, next) => {
-    Lesson.findByPk(req.params.lessonId)
-      .then((lesson) => {
-        if (!lesson) {
-          res.status(404).send("lesson not found!");
-          console.log("lesson not found!");
-        } else {
-          //console.log(lesson)
-          User.findByPk(req.userId)
-            .then((user) => {
-              lesson.addUser(user);
-              res.setHeader('Content-Type', 'application/json');
-              res.status(200).json(lesson)
-            }).catch(error => {
-              res.status(400).send(error)
-            })
-        }
-       
-      })
-      .catch(error => {
-        res.status(400).send(error)
-      })
-  });
-
-  
+    
 
 module.exports = userRouter;
 

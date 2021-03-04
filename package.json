@@ -1,7 +1,7 @@
 {
   "name": "musicLessonsBK",
   "version": "1.0.0",
-  "description": "",
+  "description": "A new customer wants to run a new application so that people who want to learn about music can do it virtually and by following a series of lessons from their mobile device",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

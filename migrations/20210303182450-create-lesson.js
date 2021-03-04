@@ -15,8 +15,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       state: {
-        type: Sequelize.BOOLEAN
-      },
+        type: DataTypes.ENUM,
+        values: ['completed', 'pending', 'review']
+      }
+      ,
       createdAt: {
         allowNull: true,
         type: Sequelize.DATE

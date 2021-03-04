@@ -26,6 +26,8 @@ notesRouter.route('/:lessonId')
     res.setHeader('Content-Type', 'text/plain');
     next();
   })
+
+  //get: get the all notes of a specific user and specific lesson  
   .get(authenticate2.verifyToken, (req, res, next) => {
     Note.findAll({ where: { user_id: req.userId, lesson_id: req.params.lessonId } })
 
@@ -41,7 +43,9 @@ notesRouter.route('/:lessonId')
         res.status(400).send(error)
       })
   })
-  .post(authenticate2.verifyToken, (req, res, next) => {
+
+  //post:add a note to specific user and specific lesson
+   .post(authenticate2.verifyToken, (req, res, next) => {
     Note.create({
       text: req.body.note,
       user_id: req.userId,
@@ -55,7 +59,8 @@ notesRouter.route('/:lessonId')
         res.status(500).send({ message: err.message });
       });
   })
-
+ 
+  //delete: delete a specific note
   .delete(authenticate2.verifyToken, (req, res, next) => {
     Note.destroy({ where: { user_id: req.userId, lesson_id: req.params.lessonId } })
       .then(user => {
